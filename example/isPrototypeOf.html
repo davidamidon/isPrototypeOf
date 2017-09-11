@@ -1,12 +1,55 @@
 <script src="../simpleTest.js"></script>
 <script>
 
-// code
+// Function
+function isPrototypeOf(prototype, originalObject) {
+  // Variable to store the property names on the passed in prototype.
+  var prototypeProperties = Object.getOwnPropertyNames(prototype);
 
-// tests
-tests({
-  'first test': function() {
-    fail();
+  // Check if a named property from the prototype can be called by the passed in Object.
+  if(originalObject[prototypeProperties[0]]) {
+    return "true";
+  } else {
+    return "false";
   }
+}
+
+// Objects for testing
+var canine = {
+  bark: function() {
+    console.log('bark');
+  }
+};
+
+var dog = Object.create(canine);
+
+dog.fetch = function() {
+  console.log('fetch');
+};
+
+var myDog = Object.create(dog);
+var empty = Object.create(null);
+
+// Tests
+tests({
+  'It should return true when passed the Object and its direct prototype.': function() {
+    eq(isPrototypeOf(dog, myDog), 'true');
+    eq(isPrototypeOf(canine, dog), 'true');
+    eq(isPrototypeOf(Object.prototype, canine), 'true');
+  },
+  'It should return false when the arguments are passed out of order.': function() {
+    eq(isPrototypeOf(myDog, dog), 'false');
+    eq(isPrototypeOf(dog, canine), 'false');
+  },
+  'It should return true when passed the Object and Object.prototype.': function() {
+    eq(isPrototypeOf(Object.prototype, myDog), 'true');
+    eq(isPrototypeOf(Object.prototype, dog), 'true');
+  },
+  'It should return false when passed a null Object and its direct prototype.': function() {
+    eq(isPrototypeOf(dog, empty), 'false');
+  },
+  'It should return true when passed the Object and its second level prototype.': function() {
+    eq(isPrototypeOf(canine, myDog), 'true');
+  },
 });
 </script>
